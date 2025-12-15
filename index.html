@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indian Options Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Options Calculator</h1>
+            <button id="settingsBtn"
+                style="background: none; border: none; color: var(--text-secondary); font-size: 1.2rem; cursor: pointer;">⚙️</button>
+        </header>
+
+        <!-- Instrument Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-instrument="NIFTY">NIFTY 50</button>
+            <button class="tab-btn" data-instrument="CRUDE">CRUDE OIL</button>
+        </div>
+
+        <!-- Main Form -->
+        <main class="calculator-form">
+
+            <!-- Buy / Sell Toggle -->
+            <div class="form-group toggle-group">
+                <label>Position</label>
+                <div class="toggle-switch">
+                    <input type="radio" id="buy" name="position" value="buy" checked>
+                    <label for="buy" class="toggle-label left">BUY</label>
+                    <input type="radio" id="sell" name="position" value="sell">
+                    <label for="sell" class="toggle-label right">SELL</label>
+                </div>
+            </div>
+
+            <!-- CE / PE Toggle -->
+            <div class="form-group toggle-group">
+                <label>Type</label>
+                <div class="toggle-switch">
+                    <input type="radio" id="ce" name="optionType" value="CE" checked>
+                    <label for="ce" class="toggle-label left">CALL (CE)</label>
+                    <input type="radio" id="pe" name="optionType" value="PE">
+                    <label for="pe" class="toggle-label right">PUT (PE)</label>
+                </div>
+            </div>
+
+            <!-- Lot Size & Quantity -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="lotSize">Lot Size</label>
+                    <input type="number" id="lotSize" value="65" readonly>
+                    <!-- Configurable via logic if needed, but standard defaults first -->
+                </div>
+                <div class="form-group">
+                    <label for="lots">Quantity (Lots)</label>
+                    <input type="number" id="lots" value="1" min="1" inputmode="numeric">
+                </div>
+            </div>
+
+            <!-- Prices -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="entryPrice">Entry Price (₹)</label>
+                    <input type="number" id="entryPrice" placeholder="0.00" inputmode="decimal" step="0.05">
+                </div>
+                <div class="form-group">
+                    <label for="exitPrice">Exit Price (₹)</label>
+                    <input type="number" id="exitPrice" placeholder="0.00" inputmode="decimal" step="0.05">
+                </div>
+            </div>
+
+            <!-- Stop Loss -->
+            <div class="form-group">
+                <label for="stopLossPrice">Stop Loss Price (₹)</label>
+                <input type="number" id="stopLossPrice" placeholder="Optional" inputmode="decimal" step="0.05">
+            </div>
+
+            <!-- Brokerage Toggle -->
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="brokerageToggle">
+                <label for="brokerageToggle">Include Brokerage & Taxes</label>
+            </div>
+
+            <!-- Strike & Capital -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="strikePrice">Strike Price</label>
+                    <input type="number" id="strikePrice" placeholder="Optional" inputmode="numeric">
+                </div>
+                <div class="form-group">
+                    <label for="capital">Total Capital (₹)</label>
+                    <input type="number" id="capital" placeholder="Optional" inputmode="decimal">
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="actions">
+                <button id="resetBtn" class="secondary-btn">Reset</button>
+                <button id="saveBtn" class="primary-btn"
+                    style="margin-left: 10px; background: var(--primary-gradient); color: white; border: none; padding: 10px 20px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600;">Save
+                    Trade</button>
+            </div>
+
+        </main>
+
+        <!-- Sticky Result Footer -->
+        <footer class="result-panel">
+            <div class="result-row main-result">
+                <span>Net P&L</span>
+                <span id="netPnL" class="profit-loss neutral">₹0.00</span>
+            </div>
+
+            <div class="result-details collapsed" id="resultDetails">
+                <div class="detail-row">
+                    <span>Risk (at SL)</span>
+                    <span id="riskAmount" class="profit-loss red">₹0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Gross P&L</span>
+                    <span id="grossPnL">₹0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Total Tax & Charges</span>
+                    <span id="totalCharges">₹0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Total Capital Used</span>
+                    <span id="totalCapital">₹0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Break Even</span>
+                    <span id="breakEven">₹0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>ROI</span>
+                    <span id="roi">0.00%</span>
+                </div>
+                <div class="detail-row">
+                    <span>Points</span>
+                    <span id="points">0.00</span>
+                </div>
+            </div>
+            <div id="saveStatus"
+                style="text-align: center; margin-top: 5px; margin-bottom: 5px; font-size: 0.9rem; min-height: 20px;">
+            </div>
+            <div class="branding">Designed and developed by Gridify</div>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configure Charges</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab-btn active" data-settings-tab="NIFTY">NIFTY</button>
+                    <button class="tab-btn" data-settings-tab="CRUDE">CRUDE</button>
+                </div>
+
+                <div id="settingsForm">
+                    <!-- Fields injected by JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="resetChargesBtn" class="secondary-btn">Reset to Default</button>
+                <button id="saveChargesBtn" class="primary-btn">Save</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

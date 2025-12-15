@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Options Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-image: none;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+            font-size: 1.8rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 5px;
+            /* label handles spacing */
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <h2>Analyzer Login</h2>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <div class="actions">
+            <button id="loginBtn" class="primary-btn"
+                style="width: 100%; background: var(--primary-gradient); color: white;">Login</button>
+        </div>
+        <div id="message" style="text-align: center; margin-top: 15px; color: var(--text-secondary);"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const msg = document.getElementById('message');
+            const btn = document.getElementById('loginBtn');
+
+            if (!user || !pass) {
+                msg.textContent = "Please fill credentials";
+                return;
+            }
+            if (!CONFIG || CONFIG.WEB_APP_URL.includes("REPLACE")) {
+                msg.textContent = "Config Error: Web App URL not set.";
+                return;
+            }
+
+            msg.textContent = "Verifying...";
+            btn.disabled = true;
+
+            fetch(CONFIG.WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'login', username: user, password: pass })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Save session
+                        localStorage.setItem('trade_auth_token', data.token);
+                        window.location.href = 'analyzer.html';
+                    } else {
+                        msg.textContent = "Login Failed: " + data.message;
+                        msg.style.color = "var(--danger-color)";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    msg.textContent = "Network Error. Check console.";
+                    console.error(err);
+                    btn.disabled = false;
+                });
+        });
+    </script>
+</body>
+
+</html>
