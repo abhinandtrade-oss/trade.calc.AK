@@ -1,5 +1,0 @@
-const images = {
-  "IM-101": "https://pub-141831e61e69445289222976a15b6fb3.r2.dev/1764346240217-ehbtycx9wud-1764346237555_8cx1s4_1.png"
-};
-
-export default images;
